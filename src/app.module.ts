@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaProviderModule } from 'src/common/providers/database/prisma/provider.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { UserModule } from './modules/user/user.module';
@@ -14,18 +14,7 @@ import configuration from './config/configuration';
             expandVariables: true,
             load: [configuration]
         }),
-        PrismaModule.forRootAsync({
-            isGlobal: true,
-            useFactory: async (configService: ConfigService) => {
-                return {
-                    prismaOptions: {
-                        datasourceUrl: configService.get('DATABASE_URL')
-                    },
-                    explicitConnect: true
-                };
-            },
-            inject: [ConfigService]
-        }),
+        PrismaProviderModule,
         UserModule
     ],
     controllers: [AppController],

@@ -12,8 +12,14 @@ export class UserService {
         });
     }
 
-    findAll(): any {
-        return this.prisma.user.findMany();
+    findMany(skip: number, take: number): any {
+        return this.prisma.$transaction([
+            this.prisma.user.count(),
+            this.prisma.user.findMany({
+                skip,
+                take
+            })
+        ]);
     }
 
     findOne(id: number): any {
