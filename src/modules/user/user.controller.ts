@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { BizException } from 'src/common/exceptions/biz.exception';
 import { BizCode } from 'src/common/enums/biz-code.enum';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';

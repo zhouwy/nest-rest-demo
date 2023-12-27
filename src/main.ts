@@ -1,3 +1,4 @@
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory, HttpAdapterHost, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
@@ -8,9 +9,10 @@ import { ResponseInterceptor } from 'src/common/interceptors/response.intercepto
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
-
+    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { bufferLogs: true });
     const adapterHost = app.get(HttpAdapterHost);
+
+    app.useLogger(app.get(Logger));
 
     // global pipes
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -19,7 +21,7 @@ async function bootstrap() {
     app.useGlobalInterceptors(new ResponseInterceptor());
 
     // global serilization interceptor
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new LoggerErrorInterceptor());
 
     // global exception fitler
     app.useGlobalFilters(new AllExceptionsFilter(adapterHost), new BizExceptionFilter(adapterHost));
