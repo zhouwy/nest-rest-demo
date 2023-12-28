@@ -11,6 +11,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const { httpAdapter } = this.httpAdapterHost;
 
         const ctx = host.switchToHttp();
+        const req = ctx.getRequest();
+
+        // 跳过健康检查
+        const status = req.url === '/api/health' ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK
 
         const responseBody = {
             code: BizCode.FAILURE,
@@ -18,6 +22,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
             message: exception?.getResponse?.()?.message || HttpStatus[HttpStatus.INTERNAL_SERVER_ERROR]
         };
 
-        httpAdapter.reply(ctx.getResponse(), responseBody, HttpStatus.OK);
+        httpAdapter.reply(ctx.getResponse(), responseBody, status);
     }
 }

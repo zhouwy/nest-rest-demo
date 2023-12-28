@@ -10,22 +10,26 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { bufferLogs: true });
-    const adapterHost = app.get(HttpAdapterHost);
 
-    // app.useLogger(app.get(Logger));
+    app.setGlobalPrefix('api');
+    app.useLogger(app.get(Logger));
+
+    const adapterHost = app.get(HttpAdapterHost);
 
     // global pipes
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-    // global response interceptor
-    app.useGlobalInterceptors(new ResponseInterceptor());
-
-    // global serilization interceptor
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new LoggerErrorInterceptor());
+    // global response / serilization / loggerError interceptor
+    app.useGlobalInterceptors(
+        new ResponseInterceptor(),
+        new ClassSerializerInterceptor(app.get(Reflector)),
+        new LoggerErrorInterceptor()
+    );
 
     // global exception fitler
     app.useGlobalFilters(new AllExceptionsFilter(adapterHost), new BizExceptionFilter(adapterHost));
 
+    // swagger
     const config = new DocumentBuilder()
         .setTitle('Swagger example')
         .setDescription('The Swagger API description')

@@ -6,6 +6,7 @@ import { PrismaProviderModule } from 'src/common/providers/database/prisma/provi
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { UserModule } from './modules/user/user.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
     imports: [
@@ -19,7 +20,8 @@ import { UserModule } from './modules/user/user.module';
         PrismaProviderModule,
         PinoProviderModule,
         // controllers
-        UserModule
+        UserModule,
+        HealthModule
     ],
     controllers: [AppController],
     providers: [AppService]
