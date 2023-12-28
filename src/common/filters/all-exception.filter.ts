@@ -15,7 +15,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const responseBody = {
             code: BizCode.FAILURE,
             data: null,
-            message: exception?.getResponse()?.message || HttpStatus[HttpStatus.INTERNAL_SERVER_ERROR]
+            message: exception?.getResponse?.()?.message || HttpStatus[HttpStatus.INTERNAL_SERVER_ERROR]
         };
 
         httpAdapter.reply(ctx.getResponse(), responseBody, HttpStatus.OK);

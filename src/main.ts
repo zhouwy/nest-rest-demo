@@ -12,7 +12,7 @@ async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { bufferLogs: true });
     const adapterHost = app.get(HttpAdapterHost);
 
-    app.useLogger(app.get(Logger));
+    // app.useLogger(app.get(Logger));
 
     // global pipes
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

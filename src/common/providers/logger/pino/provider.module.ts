@@ -1,7 +1,8 @@
 import * as path from 'node:path';
-import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { GenReqIdFixMiddleware } from './middlewares/genReqIdFix.middare';
 
 @Module({
     imports: [
@@ -24,7 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                             targets: config.get('APP').IS_PRODUCTION
                                 ? [
                                       {
-                                          target: path.resolve(__dirname, 'transports/pino-rotate-file-tranport/index'),
+                                          target: path.resolve(__dirname, 'transports/rotate-file/index'),
                                           options: {
                                               dirname: `logs`, // 日志保存的目录
                                               filename: '%DATE%.log', // 日志名称，占位符 %DATE% 取值为 datePattern 值。
@@ -35,7 +36,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                                           }
                                       }
                                   ]
-                                : [{ target: 'pino-pretty', options: { singleLine: true } }]
+                                : [
+                                      {
+                                          target: 'pino-pretty',
+                                          options: {
+                                              // colorize: true,
+                                              singleLine: true
+                                              // translateTime: "yyyy-mm-dd'T'HH:MM:ss.l'Z'",
+                                              // ignore: 'pid,hostname',
+                                              // minimumLevel: 'info',
+                                              // errorLikeObjectKeys: ['err', 'error']
+                                          }
+                                      }
+                                  ]
                         }
                     }
                 };
@@ -43,4 +56,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         })
     ]
 })
-export class PinoProviderModule {}
+export class PinoProviderModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(GenReqIdFixMiddleware).forRoutes('*');
+    }
+}
