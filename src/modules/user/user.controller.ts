@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { BizException } from 'src/common/exceptions/biz.exception';
 import { BizCode } from 'src/common/enums/biz-code.enum';
+import { CacheService } from 'src/common/providers/cache/redis/cache.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, PaginatedOutputDto, UserDto } from './dto';
@@ -8,7 +9,10 @@ import { CreateUserDto, UpdateUserDto, PaginatedOutputDto, UserDto } from './dto
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly cacheManager: CacheService
+    ) {}
 
     @ApiOperation({ summary: '新建用户'})
     @ApiResponse({ type: UserDto})
@@ -58,6 +62,18 @@ export class UserController {
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.userService.remove(id);
+    }
+
+    @ApiOperation({ summary: '测试缓存'})
+    @Post('cache')
+    async cache() {
+        const value = await this.cacheManager.get('cache_test');
+        if (value) {
+            return value;
+        }
+        const newValue = Math.floor(Math.random() * 100);
+        await this.cacheManager.set('cache_test', newValue);
+        return newValue;
     }
 }
 
