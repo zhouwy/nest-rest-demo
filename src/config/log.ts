@@ -1,3 +1,3 @@
-export const LOG = {
-    LOG_LEVEL: 'info'
+export const log = {
+    level: 'info'
 };

@@ -1,7 +1,9 @@
-import { APP } from './app';
-import { LOG } from './log';
+import { app } from './app';
+import { log } from './log';
+import { mail } from './mail';
 
 export default () => ({
-    APP,
-    LOG
+    app,
+    log,
+    mail
 });

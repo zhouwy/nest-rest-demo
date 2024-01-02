@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
-import { BizException } from 'src/common/exceptions/biz.exception';
 import { BizCode } from 'src/common/enums/biz-code.enum';
-import { CacheService } from 'src/common/providers/cache/redis/cache.service';
+import { BizException } from 'src/common/exceptions/biz.exception';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MailService } from 'src/common/providers/mail/smtp/mail.service';
+import { CacheService } from 'src/common/providers/cache/redis/cache.service';
+import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, PaginatedOutputDto, UserDto } from './dto';
 
@@ -11,7 +12,8 @@ import { CreateUserDto, UpdateUserDto, PaginatedOutputDto, UserDto } from './dto
 export class UserController {
     constructor(
         private readonly userService: UserService,
-        private readonly cacheManager: CacheService
+        private readonly cacheManager: CacheService,
+        private readonly mailService: MailService
     ) {}
 
     @ApiOperation({ summary: '新建用户'})
@@ -74,6 +76,16 @@ export class UserController {
         const newValue = Math.floor(Math.random() * 100);
         await this.cacheManager.set('cache_test', newValue);
         return newValue;
+    }
+
+    @ApiOperation({ summary: '测试发送消息队列&发送邮件'})
+    @Get('mail')
+    async sendMail() {
+        const result = await this.mailService.sendConfirmMail({
+            to: 'wybitcoin@outlook.com',
+            subject: 'test'
+        });
+        return result;
     }
 }
 

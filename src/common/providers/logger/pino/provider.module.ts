@@ -22,7 +22,7 @@ import { GenReqIdFixMiddleware } from './middlewares/genReqIdFix.middare';
                         },
                         customProps: () => ({ context: 'HTTP' }),
                         transport: {
-                            targets: config.get('APP').IS_PRODUCTION
+                            targets: config.get('app.isProduction')
                                 ? [
                                       {
                                           target: path.resolve(__dirname, 'transports/rotate-file/index'),

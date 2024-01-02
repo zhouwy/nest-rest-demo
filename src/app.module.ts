@@ -1,7 +1,9 @@
 import config from 'src/config';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { SmtpMailModule } from 'src/common/providers/mail/smtp/provider.module';
 import { PinoProviderModule } from 'src/common/providers/logger/pino/provider.module';
+import { QueueProviderModule } from 'src/common/providers/queue/redis/provider.module';
 import { CacheRedisProviderModule } from 'src/common/providers/cache/redis/provider.module';
 import { PrismaProviderModule } from 'src/common/providers/database/prisma/provider.module';
 import { AppService } from './app.service';
@@ -18,9 +20,11 @@ import { HealthModule } from './modules/health/health.module';
             expandVariables: true,
             load: [config]
         }),
-        PrismaProviderModule,
         PinoProviderModule,
+        PrismaProviderModule,
         CacheRedisProviderModule,
+        QueueProviderModule,
+        SmtpMailModule,
         // controllers
         UserModule,
         HealthModule

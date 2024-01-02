@@ -1,3 +1,3 @@
-export const APP = {
-    IS_PRODUCTION: process.env.NODE_ENV === 'production'
+export const app = {
+    isProduction: process.env.NODE_ENV === 'production'
 };
