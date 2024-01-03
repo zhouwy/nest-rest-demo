@@ -1,3 +1,4 @@
+import compression from '@fastify/compress';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory, HttpAdapterHost, Reflector } from '@nestjs/core';
@@ -37,6 +38,8 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
+
+    await app.register(compression);
 
     await app.listen(3000, '0.0.0.0');
 }
