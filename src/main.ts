@@ -1,19 +1,20 @@
-import compression from '@fastify/compress';
+import * as compression from 'compression';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory, HttpAdapterHost, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { BizExceptionFilter } from 'src/common/filters/biz-exception.filter';
 import { AllExceptionsFilter } from 'src/common/filters/all-exception.filter';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { bufferLogs: true });
+    const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
     app.setGlobalPrefix('api');
     app.useLogger(app.get(Logger));
+
+    app.use(compression());
 
     const adapterHost = app.get(HttpAdapterHost);
 
@@ -39,9 +40,7 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
 
-    await app.register(compression);
-
-    await app.listen(3000, '0.0.0.0');
+    await app.listen(3000);
 }
 
 bootstrap();

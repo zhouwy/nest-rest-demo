@@ -26,8 +26,6 @@
     "prisma:seed": "dotenv -e .env.development -- npx prisma db seed"
   },
   "dependencies": {
-    "@fastify/compress": "^6.5.0",
-    "@fastify/static": "^6.12.0",
     "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/bull": "^10.0.1",
     "@nestjs/cache-manager": "^2.1.1",
@@ -35,7 +33,7 @@
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.3.0",
     "@nestjs/mapped-types": "latest",
-    "@nestjs/platform-fastify": "^10.3.0",
+    "@nestjs/platform-express": "^10.3.0",
     "@nestjs/swagger": "^7.1.17",
     "@nestjs/terminus": "^10.2.0",
     "@prisma/client": "latest",
@@ -44,6 +42,7 @@
     "cache-manager-ioredis-yet": "^1.2.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "compression": "^1.7.4",
     "file-stream-rotator": "^1.0.0",
     "handlebars": "^4.7.8",
     "nestjs-pino": "^3.5.0",

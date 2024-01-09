@@ -1,8 +1,7 @@
 import * as path from 'node:path';
+import { Module} from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { GenReqIdFixMiddleware } from './middlewares/genReqIdFix.middare';
 
 @Module({
     imports: [
@@ -56,8 +55,4 @@ import { GenReqIdFixMiddleware } from './middlewares/genReqIdFix.middare';
         })
     ]
 })
-export class PinoProviderModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(GenReqIdFixMiddleware).forRoutes('*');
-    }
-}
+export class PinoProviderModule {}
