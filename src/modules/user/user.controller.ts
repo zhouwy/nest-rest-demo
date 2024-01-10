@@ -16,6 +16,28 @@ export class UserController {
         private readonly mailService: MailService
     ) {}
 
+    @ApiOperation({ summary: '测试缓存'})
+    @Post('cache')
+    async cache() {
+        const value = await this.cacheManager.get('cache_test');
+        if (value) {
+            return value;
+        }
+        const newValue = Math.floor(Math.random() * 100);
+        await this.cacheManager.set('cache_test', newValue);
+        return newValue;
+    }
+
+    @ApiOperation({ summary: '测试发送消息队列&发送邮件'})
+    @Get('mail')
+    async sendMail() {
+        const result = await this.mailService.sendConfirmMail({
+            to: 'wybitcoin@outlook.com',
+            subject: 'test'
+        });
+        return result;
+    }
+
     @ApiOperation({ summary: '新建用户'})
     @ApiResponse({ type: UserDto})
     @Post()
@@ -64,28 +86,6 @@ export class UserController {
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.userService.remove(id);
-    }
-
-    @ApiOperation({ summary: '测试缓存'})
-    @Post('cache')
-    async cache() {
-        const value = await this.cacheManager.get('cache_test');
-        if (value) {
-            return value;
-        }
-        const newValue = Math.floor(Math.random() * 100);
-        await this.cacheManager.set('cache_test', newValue);
-        return newValue;
-    }
-
-    @ApiOperation({ summary: '测试发送消息队列&发送邮件'})
-    @Get('mail')
-    async sendMail() {
-        const result = await this.mailService.sendConfirmMail({
-            to: 'wybitcoin@outlook.com',
-            subject: 'test'
-        });
-        return result;
     }
 }
 

@@ -15,7 +15,8 @@ import { CacheService } from './cache.service';
                 store: redisStore,
                 socket: {
                     host: configService.get('REDIS_HOST'),
-                    port: parseInt(configService.get('REDIS_PORT'))
+                    port: parseInt(configService.get('REDIS_PORT')),
+                    db: 0
                 }
             }),
             inject: [ConfigService]

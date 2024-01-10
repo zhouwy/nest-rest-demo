@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { UserModule } from './modules/user/user.module';
 import { HealthModule } from './modules/health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
     imports: [
@@ -26,8 +27,9 @@ import { HealthModule } from './modules/health/health.module';
         QueueProviderModule,
         SmtpMailModule,
         // controllers
-        UserModule,
-        HealthModule
+        AuthModule,
+        HealthModule,
+        UserModule
     ],
     controllers: [AppController],
     providers: [AppService]

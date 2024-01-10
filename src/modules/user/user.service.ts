@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -6,13 +7,17 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    create(createUserDto: CreateUserDto): any {
+    async create(createUserDto: CreateUserDto) {
+        const password = await bcrypt.hash(createUserDto.password, 10);
         return this.prisma.user.create({
-            data: createUserDto
+            data: {
+                ...createUserDto,
+                password
+            }
         });
     }
 
-    findMany(skip: number, take: number): any {
+    findMany(skip: number, take: number) {
         return this.prisma.$transaction([
             this.prisma.user.count(),
             this.prisma.user.findMany({
@@ -22,7 +27,7 @@ export class UserService {
         ]);
     }
 
-    findOne(id: number): any {
+    findOne(id: number) {
         return this.prisma.user.findUnique({
             where: {
                 id
@@ -30,7 +35,15 @@ export class UserService {
         });
     }
 
-    update(id: number, updateUserDto: UpdateUserDto): any {
+    findOneByEmail(email: string) {
+        return this.prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+    }
+
+    update(id: number, updateUserDto: UpdateUserDto) {
         return this.prisma.user.update({
             data: updateUserDto,
             where: {
@@ -39,7 +52,7 @@ export class UserService {
         });
     }
 
-    remove(id: number): any {
+    remove(id: number) {
         return this.prisma.user.delete({
             where: {
                 id

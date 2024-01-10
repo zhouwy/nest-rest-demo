@@ -1,4 +1,3 @@
-import * as compression from 'compression';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory, HttpAdapterHost, Reflector } from '@nestjs/core';
@@ -7,6 +6,7 @@ import { BizExceptionFilter } from 'src/common/filters/biz-exception.filter';
 import { AllExceptionsFilter } from 'src/common/filters/all-exception.filter';
 import { ResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { AppModule } from './app.module';
+import { applyMiddlewares } from './app.middleware';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -14,7 +14,7 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
     app.useLogger(app.get(Logger));
 
-    app.use(compression());
+    applyMiddlewares(app);
 
     const adapterHost = app.get(HttpAdapterHost);
 
