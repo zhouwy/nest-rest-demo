@@ -1,6 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Controller, Get } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { HealthCheckService, PrismaHealthIndicator, MemoryHealthIndicator, DiskHealthIndicator, HealthCheck } from '@nestjs/terminus';
 
 @Public()

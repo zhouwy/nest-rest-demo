@@ -7,15 +7,23 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    async create(createUserDto: CreateUserDto) {
-        const password = await bcrypt.hash(createUserDto.password, 10);
-        return this.prisma.user.create({
+    async createWithEmailAndPassword(createUserDto: CreateUserDto) {
+        const { email, password, name } = createUserDto;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.prisma.userEmail.create({
             data: {
-                ...createUserDto,
-                password
+                email,
+                password: hashedPassword,
+                confirmToken: '23',
+                user: {
+                    create: {
+                        name
+                    }
+                }
             }
         });
     }
+
 
     findMany(skip: number, take: number) {
         return this.prisma.$transaction([
@@ -36,7 +44,8 @@ export class UserService {
     }
 
     findOneByEmail(email: string) {
-        return this.prisma.user.findUnique({
+        return this.prisma.userEmail.findUnique({
+            include: { user: true },
             where: {
                 email
             }

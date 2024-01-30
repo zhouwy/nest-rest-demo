@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestFactory, HttpAdapterHost, Reflector } from '@nestjs/core';
@@ -11,7 +12,9 @@ import { applyMiddlewares } from './app.middleware';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-    app.setGlobalPrefix('api');
+    const cf = app.get(ConfigService);
+
+    app.setGlobalPrefix(cf.get('app.globalPrefix'));
     app.useLogger(app.get(Logger));
 
     applyMiddlewares(app);
@@ -29,7 +32,7 @@ async function bootstrap() {
     );
 
     // global exception fitler
-    app.useGlobalFilters(new AllExceptionsFilter(adapterHost), new BizExceptionFilter(adapterHost));
+    // app.useGlobalFilters(new AllExceptionsFilter(adapterHost), new BizExceptionFilter(adapterHost));
 
     // swagger
     const config = new DocumentBuilder()

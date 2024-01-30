@@ -1,25 +1,29 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
+import { UserService } from 'src/modules/user/user.service';
+import { CaslFactory } from './casl.factory';
 import { AuthService } from './auth.service';
-import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { SessionSerializer } from './session.serializer';
-import { LocalStrategy } from './strategies/local.strategy';
 import { AuthenticatedGuard } from './guards/authenticated.gurad';
+import { LocalStrategy, SmsOtpStrategy, GoogleStrategy } from './strategies';
 
 @Module({
     imports: [
         PassportModule.register({
             session: true
-        }),
-        UserModule
+        })
     ],
     controllers: [AuthController],
     providers: [
         AuthService,
+        UserService,
         LocalStrategy,
+        SmsOtpStrategy,
+        GoogleStrategy,
         SessionSerializer,
+        CaslFactory,
         {
             provide: APP_GUARD,
             useClass: AuthenticatedGuard

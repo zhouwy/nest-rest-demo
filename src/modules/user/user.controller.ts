@@ -3,7 +3,7 @@ import { BizException } from 'src/common/exceptions/biz.exception';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MailService } from 'src/common/providers/mail/smtp/mail.service';
 import { CacheService } from 'src/common/providers/cache/redis/cache.service';
-import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, Delete, ParseIntPipe, DefaultValuePipe, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, PaginatedOutputDto, UserDto } from './dto';
 
@@ -15,6 +15,17 @@ export class UserController {
         private readonly cacheManager: CacheService,
         private readonly mailService: MailService
     ) {}
+
+    @ApiOperation({ summary: '获取用户信息'})
+    @Get('info')
+    async getUserInfo(@Req() req) {
+        const userId = req.user.id;
+        const user = await this.userService.findOne(userId);
+        if (!user) {
+            throw new BizException(BizCode.FAILURE);
+        }
+        return new UserDto(user);
+    }
 
     @ApiOperation({ summary: '测试缓存'})
     @Post('cache')
@@ -31,7 +42,7 @@ export class UserController {
     @ApiOperation({ summary: '测试发送消息队列&发送邮件'})
     @Get('mail')
     async sendMail() {
-        const result = await this.mailService.sendConfirmMail({
+        const result = await this.mailService.sendRegisterConfirmMail({
             to: 'wybitcoin@outlook.com',
             subject: 'test'
         });
@@ -42,7 +53,7 @@ export class UserController {
     @ApiResponse({ type: UserDto})
     @Post()
     async create(@Body() createUserDto: CreateUserDto) {
-        return new UserDto(await this.userService.create(createUserDto));
+        return new UserDto(await this.userService.createWithEmailAndPassword(createUserDto));
     }
 
     @ApiOperation({ summary: '批量获取用户信息'})

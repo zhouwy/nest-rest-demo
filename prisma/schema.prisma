@@ -11,40 +11,68 @@ datasource db {
 }
 
 model User {
-    id       Int      @id @default(autoincrement())
-    email    String   @unique
-    password String
-    name     String?
-    role     Role     @default(USER)
-    posts    Post[]
-    profile  Profile?
+    id        Int         @id @default(autoincrement())
+    name      String?
+    userEmail UserEmail?
+    userSms   UserSms?
+    userOAuth UserOauth[]
+    role      Role[]
+
+    @@map("user")
 }
 
-model Profile {
-    id     Int    @id @default(autoincrement())
-    bio    String
-    user   User   @relation(fields: [userId], references: [id])
-    userId Int    @unique
+model UserEmail {
+    id                     Int       @id @default(autoincrement())
+    email                  String    @unique
+    password               String
+    confirmToken           String?   @map("confirm_token")
+    confirmTokenCreateTime DateTime? @map("confirmToken_create_time")
+    resetToken             String?   @map("reset_token")
+    resetTokenCreateTime   DateTime? @map("resetToken_create_time")
+    user                   User      @relation(fields: [userId], references: [id])
+    userId                 Int       @unique
+
+    @@map("user_email")
 }
 
-model Post {
-    id         Int        @id @default(autoincrement())
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-    title      String
-    published  Boolean    @default(false)
-    author     User       @relation(fields: [authorId], references: [id])
-    authorId   Int
-    categories Category[]
+model UserSms {
+    id         Int       @id @default(autoincrement())
+    phone      String    @unique
+    user       User      @relation(fields: [userId], references: [id])
+    userId     Int       @unique
+
+    @@map("user_sms")
 }
 
-model Category {
-    id    Int    @id @default(autoincrement())
-    name  String
-    posts Post[]
+model UserOauth {
+    id           Int    @id @default(autoincrement())
+    provider     String
+    openid       String
+    accessToken  String @map("access_token")
+    refreshToken String @map("refresh_token")
+    user         User   @relation(fields: [userId], references: [id])
+    userId       Int
+
+    @@map("user_oauth")
+    @@unique([provider, openid])
 }
 
-enum Role {
-    USER
-    ADMIN
+model Role {
+    id         Int          @id @default(autoincrement())
+    name       String       @unique
+    user       User[]
+    permission Permission[]
+
+    @@map("role")
+}
+
+model Permission {
+    id         Int     @id @default(autoincrement())
+    action     String
+    subject    String
+    inverted   Boolean @default(false)
+    conditions Json?
+    role       Role[]
+
+    @@map("permission")
 }
