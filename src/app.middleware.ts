@@ -1,3 +1,4 @@
+import helmet from 'helmet';
 import { Redis } from 'ioredis';
 import * as passport from 'passport';
 import RedisStore from 'connect-redis';
@@ -11,6 +12,7 @@ export async function applyMiddlewares(app: INestApplication) {
 
     const isProduction = configService.get('app.isProduction');
 
+    app.use(helmet());
     app.use(compression());
 
     app.use(

@@ -46,6 +46,15 @@ export class AuthService {
         });
     }
 
+    async activateUser(user) {
+        // return this.prisma.user.update({
+        //     where: { id: user.email },
+        //     data: {
+        //         status: 1
+        //     }
+        // })
+    }
+
     async validateUser(email: string, password: string) {
         const { user, ...userEmail } = await this.prisma.userEmail.findUnique({
             include: { user: true },
@@ -103,7 +112,11 @@ export class AuthService {
         const { user } = await this.prisma.userOauth.upsert({
             include: { user: true },
             where: { provider_openid: { provider, openid } },
-            update: {},
+            update: {
+                openid,
+                accessToken,
+                refreshToken
+            },
             create: {
                 provider,
                 openid,

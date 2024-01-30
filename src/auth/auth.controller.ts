@@ -5,7 +5,7 @@ import { Body, Controller, Post, Get, Req, Res, UseGuards} from '@nestjs/common'
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { RegisterUserDto, SendSmsCodeDto } from './dto';
-import { LocalAuthGuard, SmsOtpAuthGuard, GoogleOAuthGuard, WechatOAuthGuard } from './guards';
+import { LocalAuthGuard, SmsOtpAuthGuard, GoogleOAuthGuard, WechatOAuthGuard, AuthenticatedGuard } from './guards';
 
 @Public()
 @ApiTags('auth')
@@ -17,6 +17,13 @@ export class AuthController {
     @Post('register')
     async register(@Body() registerDto: RegisterUserDto) {
         return this.authService.createWithEmailAndPassword(registerDto);
+    }
+
+    @ApiOperation({ summary: '激活账户'})
+    @UseGuards(AuthenticatedGuard)
+    @Get('register/activate')
+    async activate(@Req() req) {
+        return this.authService.activateUser(req.user);
     }
 
     @ApiOperation({ summary: '邮箱/密码登录'})
